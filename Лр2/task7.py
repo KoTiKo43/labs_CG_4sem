@@ -86,4 +86,4 @@ for i in arr_n:
 image = Image.fromarray(img_arr, mode='RGB')
 image = ImageOps.flip(image)
 image.show()
-image.save('Крол.png')
+image.save(r'C:\\Users\Nikita\Documents\КГ Лабы\labs_CG_4sem\Лр2\Крол.png')
