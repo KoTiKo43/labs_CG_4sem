@@ -48,7 +48,8 @@ def draw_triangle(img_mat, x0, y0, z0, x1, y1, z1, x2, y2, z2, color1, color2, c
                         img_mat[j][i][0], img_mat[j][i][1], img_mat[j][i][2] = color1, color2, color3
                         z_buffer[j][i] = z_source
 
-
+def num_raise(num):
+    return num * 10000 + 1000
 
 # draw_triangle(img_arr, 250*2, 250*2, 500*2, 250*2 - 1, 250*2, 500*2, 255, 255, 255)
 # image = Image.fromarray(img_arr, mode='RGB')
@@ -57,27 +58,27 @@ def draw_triangle(img_mat, x0, y0, z0, x1, y1, z1, x2, y2, z2, color1, color2, c
 # image = Image.fromarray(img_arr, mode='RGB')
 # image.show()
 
-file = open('model_1.obj')
+file = open(r'C:\\Users\Nikita\Documents\КГ Лабы\labs_CG_4sem\Лр2\model_1.obj')
 
 arr_n = []
 arr = []
 for s in file:
     spl_s = s.split()
     if (spl_s[0] == 'v'):
-        arr.append([float(x) for x in spl_s[1:]])
+        arr.append([num_raise(float(x)) for x in spl_s[1:]])
     if (spl_s[0] == 'f'):
         arr_n.append([int(x.split('/')[0]) - 1 for x in spl_s[1:]])
 
 for i in arr_n:
-    x0 = arr[i[0]][0] * 10000 + 1000
-    y0 = arr[i[0]][1] * 10000 + 1000
-    z0 = arr[i[0]][2] * 10000 + 1000
-    x1 = arr[i[1]][0] * 10000 + 1000
-    y1 = arr[i[1]][1] * 10000 + 1000
-    z1 = arr[i[1]][2] * 10000 + 1000
-    x2 = arr[i[2]][0] * 10000 + 1000
-    y2 = arr[i[2]][1] * 10000 + 1000
-    z2 = arr[i[2]][2] * 10000 + 1000
+    x0 = arr[i[0]][0]
+    y0 = arr[i[0]][1]
+    z0 = arr[i[0]][2]
+    x1 = arr[i[1]][0]
+    y1 = arr[i[1]][1]
+    z1 = arr[i[1]][2]
+    x2 = arr[i[2]][0]
+    y2 = arr[i[2]][1]
+    z2 = arr[i[2]][2]
 
     norm = get_normal(x0, y0, z0, x1, y1, z1, x2, y2, z2)
     draw_triangle(img_arr, x0, y0, z0, x1, y1, z1, x2, y2, z2, -255*norm_scalar(norm), 0, 0)
@@ -85,4 +86,4 @@ for i in arr_n:
 image = Image.fromarray(img_arr, mode='RGB')
 image = ImageOps.flip(image)
 image.show()
-image.save('Крол')
+image.save('Крол.png')
