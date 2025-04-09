@@ -121,7 +121,7 @@ model = []
 texture_coords = []
 faces = []
 
-with open(r'C:\\Users\akimn\Documents\Лабы КГ\labs_CG_4sem\models\zayac.obj') as f:
+with open(r'C:\\Users\akimn\Documents\Лабы репозитории\Лабы КГ\labs_CG_4sem\models\zayac.obj') as f:
     for line in f:
         parts = line.split()
         if not parts: continue
@@ -148,7 +148,7 @@ for face in faces:
 vertex_normals = [n/np.linalg.norm(n) if np.linalg.norm(n)!=0 else n for n in vertex_normals]
 
 # Основной цикл рендеринга
-texture = ImageOps.flip(Image.open(r'C:\\Users\akimn\Documents\Лабы КГ\labs_CG_4sem\textures\zayac.jpg'))
+texture = ImageOps.flip(Image.open(r'C:\\Users\akimn\Documents\Лабы репозитории\Лабы КГ\labs_CG_4sem\textures\zayac.jpg'))
 
 for face in faces:
     # Получение данных для треугольника
@@ -168,11 +168,7 @@ for face in faces:
 #    draw_triangle(img_mat, *v0, *v1, *v2, *intensities)
     apply_texture(img_text, *v0, *v1, *v2, uv0, uv1, uv2, texture, *intensities)
 
-image = Image.fromarray(img_mat, mode='RGB')
 image2 = Image.fromarray(img_text, mode='RGB')
-image = ImageOps.flip(image)
 image2 = ImageOps.flip(image2)
-image.show()
 image2.show()
 #image.save(r'C:\\Users\akimn\Documents\Лабы КГ\labs_CG_4sem\output_images\Крол.png')
-image2.save(r'C:\\Users\akimn\Documents\Лабы КГ\labs_CG_4sem\output_images\КролТекст.png')
