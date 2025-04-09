@@ -39,27 +39,18 @@ def draw_triangle(img_mat, x0, y0, z0, x1, y1, z1, x2, y2, z2, i0, i1, i2):
     proj2 = project_vertex(x2, y2, z2)
     
     # Ограничивающий прямоугольник
-    xmin = floor(min(proj0[0], proj1[0], proj2[0]))
-    xmax = ceil(max(proj0[0], proj1[0], proj2[0]))
-    ymin = floor(min(proj0[1], proj1[1], proj2[1]))
-    ymax = ceil(max(proj0[1], proj1[1], proj2[1]))
-    
-    if (xmin < 0):
-        xmin = 0
-    if (xmax > W):
-        xmax = W
-    if (ymin < 0):
-        ymin = 0
-    if (ymax > H):
-        ymax = H
+    x_min = max(0, int(min(x0, x1, x2)))
+    x_max = min(W-1, int(max(x0, x1, x2)) + 1)
+    y_min = max(0, int(min(y0, y1, y2)))
+    y_max = min(H-1, int(max(y0, y1, y2)) + 1)
     
     # Проверка ориентации
     normal = compute_normal(x0, y0, z0, x1, y1, z1, x2, y2, z2)
     if norm_scalar(normal) > 0: return
 
     # Растеризация
-    for i in range(xmin, xmax):
-        for j in range(ymin, ymax):
+    for i in range(x_min, x_max):
+        for j in range(y_min, y_max):
             lambdas = barycentric_coordinates(i, j, *proj0, *proj1, *proj2)
             if all(l >= 0 for l in lambdas):
                 z = lambdas[0]*z0 + lambdas[1]*z1 + lambdas[2]*z2
@@ -130,7 +121,7 @@ model = []
 texture_coords = []
 faces = []
 
-with open(r'C:\\Users\akimn\Documents\Лабы КГ\labs_CG_4sem\Лр4\zayac.obj') as f:
+with open(r'C:\\Users\akimn\Documents\Лабы КГ\labs_CG_4sem\models\zayac.obj') as f:
     for line in f:
         parts = line.split()
         if not parts: continue
@@ -157,7 +148,7 @@ for face in faces:
 vertex_normals = [n/np.linalg.norm(n) if np.linalg.norm(n)!=0 else n for n in vertex_normals]
 
 # Основной цикл рендеринга
-texture = ImageOps.flip(Image.open(r'C:\\Users\akimn\Documents\Лабы КГ\labs_CG_4sem\Лр4\zayac_texture.jpg'))
+texture = ImageOps.flip(Image.open(r'C:\\Users\akimn\Documents\Лабы КГ\labs_CG_4sem\textures\zayac.jpg'))
 
 for face in faces:
     # Получение данных для треугольника
@@ -183,5 +174,5 @@ image = ImageOps.flip(image)
 image2 = ImageOps.flip(image2)
 image.show()
 image2.show()
-#image.save(r'C:\\Users\akimn\Documents\Лабы КГ\labs_CG_4sem\ЛР4\Крол.png')
-image2.save(r'C:\\Users\akimn\Documents\Лабы КГ\labs_CG_4sem\ЛР4\КролТекст.png')
+#image.save(r'C:\\Users\akimn\Documents\Лабы КГ\labs_CG_4sem\output_images\Крол.png')
+image2.save(r'C:\\Users\akimn\Documents\Лабы КГ\labs_CG_4sem\output_images\КролТекст.png')
