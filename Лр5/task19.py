@@ -1,9 +1,10 @@
 import numpy as np
 from PIL import Image, ImageOps
 from math import ceil, floor, cos, sin, pi
+import quaternion as qu
 
 # Конфигурационные параметры
-H, W = 2000, 2000
+H, W = 3000, 3000
 FOV_X, FOV_Y = 1000, 1000
 LIGHT_DIR = np.array([0, 0, 1])
 
@@ -85,6 +86,15 @@ def euler_rotation_matrix(angles):
     rotation_matrix = np.dot(rz, np.dot(ry, rx))
     return rotation_matrix
 
+def quat_rotation_matrix(q):
+    a, b, c, d =  q.w, q.x, q.y, q.z
+    aa, bb, cc, dd = a**2, b**2, c**2, d**2
+    return np.array([
+        [aa + bb - cc - dd, 2.0 * (b*c - a*d), 2.0 * (b*d + a*c)],
+        [2.0 * (b*c - a*d), aa - bb + cc - dd, 2.0 * (c*d - a*b)],
+        [2.0 * (b*d - a*c), 2.0 * (c*d + a*b), aa - bb - cc + dd]
+    ])
+
 def compute_vertex_normal(vertices, faces):
     # Вычисление вершинных нормалей
     vertex_normals = np.zeros((len(vertices), 3))
@@ -110,6 +120,8 @@ def transform_vertex(v, scale, angles, translate, rotation_mode, quat):
         rot_mat = euler_rotation_matrix(angles)
     elif rotation_mode == 'quat':
         rot_mat = quat_rotation_matrix(quat)
+    else:
+        rot_mat = np.eye(3)
     
     rotated = np.dot(rot_mat, scaled)
         
@@ -141,8 +153,8 @@ def rasterize_triangle(proj_points, world_points, uv_coords, intencities, textur
             z = lambda0 * z0 + lambda1 * z1 + lambda2 * z2
             if z < z_buffer[j][i]:
                 if texture:
-                    texture_c = [round(texture.height * (lambda0 * uv_coords[0][0] + lambda1 * uv_coords[1][0] + lambda2 * uv_coords[2][0])),
-                                round(texture.width * (lambda0 * uv_coords[0][1] + lambda1 * uv_coords[1][1] + lambda2 * uv_coords[2][1]))]
+                    texture_c = [int(texture.height * (lambda0 * uv_coords[0][0] + lambda1 * uv_coords[1][0] + lambda2 * uv_coords[2][0])),
+                                int(texture.width * (lambda0 * uv_coords[0][1] + lambda1 * uv_coords[1][1] + lambda2 * uv_coords[2][1]))]
                                                                      
                     color = texture.getpixel((texture_c[0], texture_c[1]))
                 else:
@@ -150,6 +162,8 @@ def rasterize_triangle(proj_points, world_points, uv_coords, intencities, textur
                 
                 # Тонировка Гуро
                 intencity = intencities[0] * lambda0 + intencities[1] * lambda1 + intencities[2] * lambda2
+                intencity = min(0, intencity)
+
                 final_color = (-color[0] * intencity,
                                 -color[1] * intencity,
                                 -color[2] * intencity)
@@ -190,11 +204,20 @@ def render_obj(obj_path, texture_path = None, scale = (1, 1, 1), angles = (0, 0,
         rasterize_triangle(proj_points, world_points, uv_coords, intensities, texture)
 
 
-render_obj(r'C:\\Users\akimn\Documents\Лабы репозитории\Лабы КГ\labs_CG_4sem\models\zayac.obj',
-           texture_path=None,
-           scale=(1, 1, 1), angles=(0, pi/2, 0), translate=(0, -0.03, 0.2))
+angle = np.radians(45)  # Угол в радианах
+axis = np.array([0, 1, 0])  # Ось Y
+q = qu.from_rotation_vector(axis * angle)
+render_obj(r'C:\\Users\Nikita\Documents\КГ Лабы\labs_CG_4sem\models\man.obj',
+           texture_path=r'C:\\Users\Nikita\Documents\КГ Лабы\labs_CG_4sem\textures\man.bmp',
+           scale=(3, 3, 3), angles=(0, pi+0.001, 0), translate=(0, 0, 2.5))
+#render_obj(r'C:\\Users\Nikita\Documents\КГ Лабы\labs_CG_4sem\models\cat.obj',
+#           texture_path=r'C:\\Users\Nikita\Documents\КГ Лабы\labs_CG_4sem\textures\cat.jpg',
+#           scale=(0.05, 0.05, 0.05), angles=(pi/2, pi+0.001, 0), translate=(0, -0.9, 3))
+#render_obj(r'C:\\Users\Nikita\Documents\КГ Лабы\labs_CG_4sem\models\zayac.obj',
+#           texture_path=None,
+#           scale=(1, 1, 1), angles=(0, pi/2, 0), translate=(0, -0.03, 0.2), rotation_mode='quat', quat=q)
 
 image = Image.fromarray(output_image, mode='RGB')
 image = ImageOps.flip(image)
 image.show()
-image.save(r'C:\\Users\akimn\Documents\Лабы репозитории\Лабы КГ\labs_CG_4sem\output_images\result.png')
+image.save(r'C:\\Users\akimn\Documents\Лабы репозитории\КГ Лабы\labs_CG_4sem\output_images\result_man.png')
