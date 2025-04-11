@@ -89,10 +89,11 @@ def euler_rotation_matrix(angles):
 def quat_rotation_matrix(q):
     a, b, c, d =  q.w, q.x, q.y, q.z
     aa, bb, cc, dd = a**2, b**2, c**2, d**2
+    bc2, ad2, bd2, ac2, cd2, ab2 = 2.0 * b*c, 2.0 * a*d, 2.0 * b*d, 2.0 * a*c, 2.0 * c*d, 2.0 * a*b
     return np.array([
-        [aa + bb - cc - dd, 2.0 * (b*c - a*d), 2.0 * (b*d + a*c)],
-        [2.0 * (b*c - a*d), aa - bb + cc - dd, 2.0 * (c*d - a*b)],
-        [2.0 * (b*d - a*c), 2.0 * (c*d + a*b), aa - bb - cc + dd]
+        [aa + bb - cc - dd, bc2 - ad2, bd2 + ac2],
+        [bc2 - ad2, aa - bb + cc - dd, cd2 - ab2],
+        [bd2 - ac2, cd2 + ab2, aa - bb - cc + dd]
     ])
 
 def compute_vertex_normal(vertices, faces):
@@ -207,17 +208,17 @@ def render_obj(obj_path, texture_path = None, scale = (1, 1, 1), angles = (0, 0,
 angle = np.radians(45)  # Угол в радианах
 axis = np.array([0, 1, 0])  # Ось Y
 q = qu.from_rotation_vector(axis * angle)
-render_obj(r'C:\\Users\Nikita\Documents\КГ Лабы\labs_CG_4sem\models\man.obj',
-           texture_path=r'C:\\Users\Nikita\Documents\КГ Лабы\labs_CG_4sem\textures\man.bmp',
-           scale=(3, 3, 3), angles=(0, pi+0.001, 0), translate=(0, 0, 2.5))
-#render_obj(r'C:\\Users\Nikita\Documents\КГ Лабы\labs_CG_4sem\models\cat.obj',
-#           texture_path=r'C:\\Users\Nikita\Documents\КГ Лабы\labs_CG_4sem\textures\cat.jpg',
+render_obj(r'C:\\Users\akimn\Documents\Лабы репозитории\Лабы КГ\labs_CG_4sem\models\man.obj',
+           texture_path=r'C:\\Users\akimn\Documents\Лабы репозитории\Лабы КГ\labs_CG_4sem\textures\man.bmp',
+           scale=(3, 3, 3), angles=(0, pi+0.001, 0), translate=(0, 0, 2))
+#render_obj(r'C:\\Users\akimn\Documents\Лабы репозитории\Лабы КГ\labs_CG_4sem\models\cat.obj',
+#           texture_path=r'C:\\Users\akimn\Documents\Лабы репозитории\Лабы КГ\labs_CG_4sem\textures\cat.jpg',
 #           scale=(0.05, 0.05, 0.05), angles=(pi/2, pi+0.001, 0), translate=(0, -0.9, 3))
-#render_obj(r'C:\\Users\Nikita\Documents\КГ Лабы\labs_CG_4sem\models\zayac.obj',
+#render_obj(r'C:\\Users\akimn\Documents\Лабы репозитории\Лабы КГ\labs_CG_4sem\models\zayac.obj',
 #           texture_path=None,
 #           scale=(1, 1, 1), angles=(0, pi/2, 0), translate=(0, -0.03, 0.2), rotation_mode='quat', quat=q)
 
 image = Image.fromarray(output_image, mode='RGB')
 image = ImageOps.flip(image)
 image.show()
-image.save(r'C:\\Users\akimn\Documents\Лабы репозитории\КГ Лабы\labs_CG_4sem\output_images\result_man.png')
+#image.save(r'C:\\Users\akimn\Documents\Лабы репозитории\Лабы КГ\labs_CG_4sem\output_images\result_man.png')
